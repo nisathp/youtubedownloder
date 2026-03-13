@@ -442,68 +442,76 @@
         }
 
         // ==================== DOWNLOAD FUNCTION ====================
-        async function startDownload() {
-            if (!selectedFormat) {
-                showError('Please select a format first');
-                return;
-            }
+       async function startDownload() {
+    if (!selectedFormat) {
+        showError('Please select a format first');
+        return;
+    }
 
-            const mode = document.querySelector('input[name="target"]:checked').value;
+    // Get selected mode (local or drive)
+    const mode = document.querySelector('input[name="target"]:checked')?.value || 'local';
 
-            // Show progress area
-            document.getElementById('progressArea').classList.remove('hidden');
-            document.getElementById('downloadReady').classList.add('hidden');
-            document.getElementById('statusLabel').textContent = '🚀 Starting download...';
-            document.getElementById('pBar').style.width = '0%';
-            document.getElementById('pPercent').textContent = '0%';
+    // Show progress area
+    document.getElementById('progressArea').classList.remove('hidden');
+    document.getElementById('downloadReady').classList.add('hidden');
+    document.getElementById('statusLabel').textContent = '🚀 Starting download...';
+    document.getElementById('pBar').style.width = '0%';
+    document.getElementById('pPercent').textContent = '0%';
 
-            // Start progress tracking
-            startProgressTracking();
+    // Start progress tracking
+    startProgressTracking();
 
-            try {
-                const response = await fetch(`${apiBaseUrl}/download`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        url: currentVideoUrl,
-                        format_id: selectedFormat,
-                        mode: mode
-                    })
-                });
+    try {
+        const response = await fetch(`${apiBaseUrl}/download`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                url: currentVideoUrl,
+                format_id: selectedFormat,
+                mode: mode  // Send mode to backend
+            })
+        });
 
-                const data = await response.json();
+        const data = await response.json();
 
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-
-                if (data.status === 'ready') {
-                    stopProgressTracking();
-                    
-                    document.getElementById('statusLabel').textContent = '✅ Download Complete!';
-                    document.getElementById('downloadReady').classList.remove('hidden');
-                    
-                    const link = document.getElementById('finalLink');
-                    link.href = `${apiBaseUrl}/stream/${data.file_id}`;
-                    link.download = data.name || 'video.mp4';
-                    
-                    // Auto click after 1 second
-                    setTimeout(() => {
-                        link.click();
-                    }, 1000);
-
-                    // Load files list
-                    loadDriveFiles();
-                }
-
-            } catch (error) {
-                stopProgressTracking();
-                showError('Download failed: ' + error.message);
-                document.getElementById('progressArea').classList.add('hidden');
-            }
+        if (data.error) {
+            throw new Error(data.error);
         }
+
+        if (data.status === 'ready') {
+            stopProgressTracking();
+            
+            document.getElementById('statusLabel').textContent = '✅ Download Complete!';
+            document.getElementById('downloadReady').classList.remove('hidden');
+            
+            const link = document.getElementById('finalLink');
+            link.href = `${apiBaseUrl}/stream/${data.file_id}`;
+            link.download = data.name || 'video.mp4';
+            
+            // Show appropriate message
+            if (data.mode === 'local') {
+                document.getElementById('statusLabel').innerHTML = '✅ Ready! Click below to download to your computer';
+                // Auto download after 1 second for local mode
+                setTimeout(() => {
+                    link.click();
+                }, 1000);
+            } else {
+                document.getElementById('statusLabel').innerHTML = '✅ Saved to Google Drive only!';
+                link.textContent = '📁 View in Drive (File saved)';
+            }
+
+            // Load files list
+            loadDriveFiles();
+        }
+
+    } catch (error) {
+        stopProgressTracking();
+        showError('Download failed: ' + error.message);
+        document.getElementById('progressArea').classList.add('hidden');
+    }
+}
 
         function startProgressTracking() {
             progressTimer = setInterval(async () => {
