@@ -3,223 +3,586 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎥 YouTube Downloader Pro v4.0 - Anti-Ban</title>
+    <title>🎥 YouTube Downloader Pro v5.0 - Anti-Ban</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .loader { @apply w-8 h-8 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin; }
-        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        .btn-primary { @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300; }
-        .btn-success { @apply bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-4 px-12 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 inline-block; }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid rgba(59, 130, 246, 0.3);
+            border-bottom-color: #3b82f6;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .gradient-bg {
+            background: linear-gradient(-45deg, #1e293b, #0f172a, #1e1b4b, #0f172a);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.5);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.5);
+        }
+        .format-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .format-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.3);
+        }
+        .format-card.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+        }
     </style>
 </head>
-<body class="gradient-bg min-h-screen py-12 px-4">
-    <div class="max-w-4xl mx-auto bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl p-8">
-        
-        <div class="text-center mb-12">
-            <h1 class="text-6xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent mb-4">
-                YouTube Downloader
+<body class="gradient-bg min-h-screen py-8 px-4 font-sans">
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-5xl md:text-7xl font-black mb-4">
+                <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent animate-gradient">
+                    YouTube Downloader
+                </span>
             </h1>
-            <div class="flex flex-wrap justify-center gap-4 text-sm bg-black/20 px-6 py-3 rounded-2xl">
-                <span class="bg-emerald-500/30 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold">v4.0 Anti-Ban</span>
-                <span class="text-blue-400">🔒 Proxy + Tor + iOS Bypass</span>
-                <span class="text-purple-400">🎯 1080p HQ FFmpeg Merge</span>
+            <div class="flex flex-wrap justify-center gap-3 text-sm">
+                <span class="bg-blue-500/20 text-blue-400 px-4 py-2 rounded-full font-bold border border-blue-500/30">🚀 v5.0 Anti-Ban</span>
+                <span class="bg-purple-500/20 text-purple-400 px-4 py-2 rounded-full font-bold border border-purple-500/30">🛡️ PO Token Bypass</span>
+                <span class="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full font-bold border border-emerald-500/30">⚡ 4K + 1080p HQ</span>
             </div>
         </div>
 
-        <!-- Backend URL -->
-        <div class="mb-10 p-6 bg-white/5 rounded-3xl border-2 border-dashed border-blue-500/50">
-            <label class="block text-sm font-bold text-blue-400 uppercase mb-3 tracking-wider">🌐 Backend URL (Copy from Colab)</label>
-            <input type="url" id="apiBaseUrl" placeholder="https://abc-123.trycloudflare.com" 
-                   class="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-lg text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none backdrop-blur-sm">
-        </div>
-
-        <!-- Input -->
-        <div class="flex flex-col lg:flex-row gap-6 mb-12">
-            <input type="url" id="videoUrl" placeholder="🔗 YouTube URL paste செய்யவும் (Age-restricted OK)..." 
-                   class="flex-1 bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-xl text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none backdrop-blur-sm">
-            <button onclick="fetchMetadata()" class="btn-primary text-xl min-w-[160px]">
-                🔍 Analyze
-            </button>
-        </div>
-
-        <!-- Progress -->
-        <div id="progressArea" class="hidden mb-12 p-10 bg-white/5 rounded-3xl border border-white/20 backdrop-blur-xl">
-            <div class="flex justify-between items-center mb-8">
-                <span id="statusLabel" class="text-2xl font-bold text-blue-400">🚀 Starting download...</span>
+        <!-- Server Status Card -->
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mb-6">
+            <div class="flex items-center justify-between flex-wrap gap-4">
                 <div class="flex items-center gap-4">
-                    <span id="pPercent" class="text-4xl font-black text-white">0%</span>
-                    <div class="loader"></div>
+                    <div id="serverStatusIndicator" class="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
+                    <span id="serverStatusText" class="text-white font-semibold">Server: Disconnected</span>
                 </div>
-            </div>
-            <div class="w-full bg-white/10 h-6 rounded-3xl overflow-hidden">
-                <div id="pBar" class="bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 h-full rounded-3xl shadow-lg transition-all duration-500" style="width: 0%"></div>
-            </div>
-            <div id="downloadReady" class="hidden mt-12 text-center">
-                <a id="finalLink" class="btn-success text-xl">
-                    📥 Download Video
-                </a>
+                <div class="text-sm text-slate-400" id="serverPath"></div>
+                <button onclick="checkServerStatus()" class="px-4 py-2 bg-white/10 rounded-xl text-white hover:bg-white/20 transition">
+                    🔄 Refresh Status
+                </button>
             </div>
         </div>
 
-        <!-- Results -->
-        <div id="displayArea" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div class="lg:col-span-1 text-center">
-                <div class="w-full aspect-video bg-white/10 rounded-3xl overflow-hidden shadow-2xl border border-white/20">
-                    <img id="vidThumb" class="w-full h-full object-cover" src="">
-                </div>
-                <h3 id="vidTitle" class="mt-6 text-xl font-bold text-white line-clamp-2 px-4"></h3>
-                <p id="vidDuration" class="text-lg text-slate-400 mt-2"></p>
+        <!-- Backend URL Input -->
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mb-6">
+            <label class="block text-sm font-bold text-blue-400 uppercase mb-3 tracking-wider">
+                🌐 Backend URL (Colab-ல இருந்து Copy பண்ணுங்க)
+            </label>
+            <div class="flex flex-col md:flex-row gap-4">
+                <input type="url" id="apiBaseUrl" 
+                       placeholder="https://xxxx-xx-xx-xx-xx.ngrok-free.app or https://xxxx.trycloudflare.com" 
+                       class="flex-1 bg-white/10 border border-white/30 rounded-xl px-6 py-4 text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none">
+                <button onclick="testConnection()" class="px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-bold hover:shadow-xl transition">
+                    🔌 Test Connection
+                </button>
             </div>
-            
-            <div class="lg:col-span-2 space-y-8">
-                <div class="bg-white/10 p-6 rounded-3xl border border-white/20">
-                    <div class="flex flex-wrap gap-8 justify-center">
-                        <label class="flex items-center gap-3 cursor-pointer text-lg">
-                            <input type="radio" name="target" value="local" checked class="w-6 h-6 text-blue-600 bg-white/20 rounded">
-                            <span class="font-bold">💾 Local (Fast)</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer text-lg">
-                            <input type="radio" name="target" value="drive" class="w-6 h-6 text-blue-600 bg-white/20 rounded">
-                            <span class="font-bold">☁️ Google Drive</span>
-                        </label>
+            <div id="connectionTestResult" class="mt-3 text-sm hidden"></div>
+        </div>
+
+        <!-- URL Input Section -->
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mb-6">
+            <label class="block text-sm font-bold text-purple-400 uppercase mb-3 tracking-wider">
+                🔗 YouTube URL
+            </label>
+            <div class="flex flex-col md:flex-row gap-4">
+                <input type="url" id="videoUrl" 
+                       placeholder="https://youtube.com/watch?v=... (Age-restricted videos also work)" 
+                       value="https://www.youtube.com/watch?v=HAxm8n9QY50"
+                       class="flex-1 bg-white/10 border border-white/30 rounded-xl px-6 py-4 text-white placeholder-slate-400 focus:border-purple-400 focus:outline-none">
+                <button onclick="fetchMetadata()" class="px-8 py-4 btn-primary rounded-xl text-white font-bold text-lg min-w-[160px]">
+                    🔍 Analyze
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-12 mb-6">
+            <div class="flex flex-col items-center justify-center gap-6">
+                <div class="loader"></div>
+                <p class="text-white text-xl font-semibold">Fetching video information...</p>
+                <p class="text-slate-400">This may take 5-10 seconds</p>
+            </div>
+        </div>
+
+        <!-- Progress Area -->
+        <div id="progressArea" class="hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-8 mb-6">
+            <div class="flex flex-col gap-6">
+                <div class="flex justify-between items-center">
+                    <span id="statusLabel" class="text-2xl font-bold text-blue-400">🚀 Starting download...</span>
+                    <div class="flex items-center gap-4">
+                        <span id="pPercent" class="text-4xl font-black text-white">0%</span>
+                        <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <h4 class="text-blue-400 text-lg font-black uppercase mb-6 tracking-widest text-center">🎥 HQ Video</h4>
-                        <div id="vList" class="space-y-4"></div>
+                <!-- Progress Bar -->
+                <div class="w-full bg-white/10 h-6 rounded-full overflow-hidden">
+                    <div id="pBar" class="bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                
+                <!-- Progress Details -->
+                <div class="flex justify-between text-slate-400">
+                    <span id="downloadSpeed">Speed: --</span>
+                    <span id="downloadEta">Time left: --</span>
+                </div>
+
+                <!-- Download Ready -->
+                <div id="downloadReady" class="hidden mt-6 text-center">
+                    <a id="finalLink" class="btn-success px-12 py-4 rounded-xl text-white font-bold text-xl inline-block transform hover:scale-105 transition">
+                        📥 Download Video
+                    </a>
+                    <p class="text-emerald-400 mt-4 text-sm">✅ File saved to Google Drive!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Info Display -->
+        <div id="displayArea" class="hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-8 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Thumbnail & Title -->
+                <div class="lg:col-span-1">
+                    <div class="w-full aspect-video bg-white/10 rounded-xl overflow-hidden border border-white/20">
+                        <img id="vidThumb" class="w-full h-full object-cover" src="" alt="Video thumbnail">
                     </div>
+                    <h3 id="vidTitle" class="mt-4 text-xl font-bold text-white line-clamp-2"></h3>
+                    <div class="flex items-center gap-4 mt-2 text-slate-400">
+                        <span>⏱️ <span id="vidDuration"></span></span>
+                    </div>
+                </div>
+
+                <!-- Format Selection -->
+                <div class="lg:col-span-2">
+                    <!-- Storage Mode Selection -->
+                    <div class="bg-white/5 rounded-xl p-4 mb-6">
+                        <div class="flex gap-6 justify-center">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="target" value="local" checked class="w-5 h-5 text-blue-600">
+                                <span class="text-white font-medium">💾 Download Now</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="radio" name="target" value="drive" class="w-5 h-5 text-blue-600">
+                                <span class="text-white font-medium">☁️ Save to Drive Only</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Video Formats -->
+                    <div class="mb-6">
+                        <h4 class="text-blue-400 text-lg font-bold mb-4 flex items-center gap-2">
+                            <span>🎥 Video Formats</span>
+                            <span class="text-xs bg-blue-500/30 px-3 py-1 rounded-full">HQ</span>
+                        </h4>
+                        <div id="vList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2"></div>
+                    </div>
+
+                    <!-- Audio Formats -->
                     <div>
-                        <h4 class="text-yellow-400 text-lg font-black uppercase mb-6 tracking-widest text-center">🎵 Audio Only</h4>
-                        <div id="aList" class="space-y-4"></div>
+                        <h4 class="text-yellow-400 text-lg font-bold mb-4 flex items-center gap-2">
+                            <span>🎵 Audio Formats</span>
+                            <span class="text-xs bg-yellow-500/30 px-3 py-1 rounded-full">MP3</span>
+                        </h4>
+                        <div id="aList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2"></div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Downloaded Files List -->
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-white font-bold text-lg">📁 Downloaded Files (Google Drive)</h3>
+                <button onclick="loadDriveFiles()" class="px-4 py-2 bg-white/10 rounded-lg text-white hover:bg-white/20 transition text-sm">
+                    🔄 Refresh
+                </button>
+            </div>
+            <div id="filesContainer" class="space-y-2 max-h-60 overflow-y-auto">
+                <p class="text-slate-400 text-center py-4">Click refresh to load files</p>
+            </div>
+            <div id="drivePath" class="mt-4 text-xs text-slate-500 border-t border-white/10 pt-4"></div>
         </div>
     </div>
 
     <script>
+        // ==================== GLOBAL VARIABLES ====================
+        let selectedFormat = null;
+        let currentVideoUrl = '';
         let progressTimer = null;
+        let apiBaseUrl = '';
 
-        async function fetchMetadata() {
-            const url = document.getElementById('videoUrl').value.trim();
-            let api = document.getElementById('apiBaseUrl').value.trim();
-            if (!url || !api) return alert('URL & Backend URL தேவை!');
-
-            if (api.endsWith('/')) api = api.slice(0, -1);
-            document.getElementById('displayArea').classList.add('hidden');
-            document.getElementById('progressArea').classList.add('hidden');
-
-            try {
-                const res = await fetch(`${api}/get_info`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url})
-                });
-                const data = await res.json();
-                if (data.error) throw new Error(data.error);
-
-                document.getElementById('vidTitle').textContent = data.title;
-                document.getElementById('vidThumb').src = data.thumbnail || '';
-                document.getElementById('vidDuration').textContent = formatDuration(data.duration);
-
-                renderList('vList', data.video, true);
-                renderList('aList', data.audio, false);
-                document.getElementById('displayArea').classList.remove('hidden');
-            } catch (err) {
-                alert(`Error: ${err.message}\nTry different Cloudflare URL`);
-            }
-        }
-
-        function renderList(listId, items, isVideo) {
-            const container = document.getElementById(listId);
-            container.innerHTML = '';
-            items.forEach(item => {
-                const btn = document.createElement('button');
-                btn.className = `w-full p-6 rounded-2xl border-2 transition-all duration-300 hover:scale-[1.02] shadow-xl ${
-                    isVideo ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-400 hover:from-blue-400/40 hover:to-purple-400/40' :
-                             'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-400 hover:from-yellow-400/40 hover:to-orange-400/40'
-                }`;
-                btn.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <div class="font-black text-xl">${item.res || item.abr}</div>
-                            ${item.size ? `<div class="text-sm text-slate-400">${formatBytes(item.size)}</div>` : ''}
-                        </div>
-                        <span class="px-4 py-2 bg-black/30 rounded-xl text-sm font-bold">${item.ext}</span>
-                    </div>
-                `;
-                btn.onclick = () => startDownload(item.id);
-                container.appendChild(btn);
-            });
-        }
-
+        // ==================== UTILITY FUNCTIONS ====================
         function formatDuration(seconds) {
-            if (!seconds) return '';
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60);
-            return `${m}:${s.toString().padStart(2, '0')}`;
+            if (!seconds) return '0:00';
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
         }
 
         function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
+            if (bytes === 0 || !bytes) return '0 Bytes';
             const k = 1024;
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        async function startDownload(formatId) {
-            const url = document.getElementById('videoUrl').value.trim();
-            const mode = document.querySelector('input[name="target"]:checked').value;
-            let api = document.getElementById('apiBaseUrl').value.trim();
-            if (api.endsWith('/')) api = api.slice(0, -1);
+        function showError(message) {
+            alert('❌ ' + message);
+        }
 
-            document.getElementById('progressArea').classList.remove('hidden');
-            document.getElementById('downloadReady').classList.add('hidden');
-            document.getElementById('statusLabel').textContent = '🚀 Anti-ban proxy connecting...';
-            document.getElementById('pPercent').textContent = '0%';
+        // ==================== SERVER CONNECTION ====================
+        async function checkServerStatus() {
+            const apiInput = document.getElementById('apiBaseUrl').value.trim();
+            if (!apiInput) {
+                document.getElementById('serverStatusText').textContent = 'Server: Enter URL first';
+                return;
+            }
 
-            progressTimer = setInterval(async () => {
-                try {
-                    const pRes = await fetch(`${api}/get_progress`);
-                    const pData = await pRes.json();
-                    const percent = pData.percent || '0%';
-                    document.getElementById('pBar').style.width = percent;
-                    document.getElementById('pPercent').textContent = percent;
-                    
-                    if (percent === '100%') {
-                        document.getElementById('statusLabel').textContent = '⚙️ FFmpeg merging HQ streams...';
-                    }
-                } catch {}
-            }, 1000);
-
+            apiBaseUrl = apiInput.replace(/\/$/, ''); // Remove trailing slash
+            
             try {
-                const res = await fetch(`${api}/download`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url, format_id: formatId, mode})
+                const response = await fetch(`${apiBaseUrl}/`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                const result = await res.json();
-                clearInterval(progressTimer);
-
-                if (result.status === 'ready') {
-                    document.getElementById('statusLabel').textContent = '✅ Download Ready!';
-                    document.getElementById('downloadReady').classList.remove('hidden');
-                    const link = document.getElementById('finalLink');
-                    link.href = `${api}/stream/${result.file_id}`;
-                    link.download = result.name;
-                    link.textContent = `📥 Download ${formatBytes(result.size || 0)}`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('serverStatusIndicator').className = 'w-4 h-4 rounded-full bg-green-500';
+                    document.getElementById('serverStatusText').textContent = '✅ Server: Connected';
+                    document.getElementById('serverPath').textContent = data.save_path || 'Google Drive Ready';
+                    
+                    // Test connection result
+                    const testResult = document.getElementById('connectionTestResult');
+                    testResult.className = 'mt-3 text-sm text-emerald-400';
+                    testResult.textContent = '✅ Connection successful! Server is ready.';
+                    testResult.classList.remove('hidden');
+                    
+                    // Load files
+                    loadDriveFiles();
                 } else {
-                    alert(result.message || '✅ Saved to Drive!');
-                    document.getElementById('progressArea').classList.add('hidden');
+                    throw new Error('Server response not OK');
                 }
-            } catch (e) {
-                clearInterval(progressTimer);
-                alert('❌ Failed! Try different Cloudflare URL from Colab');
+            } catch (error) {
+                document.getElementById('serverStatusIndicator').className = 'w-4 h-4 rounded-full bg-red-500 animate-pulse';
+                document.getElementById('serverStatusText').textContent = '❌ Server: Disconnected';
+                document.getElementById('serverPath').textContent = '';
+                
+                const testResult = document.getElementById('connectionTestResult');
+                testResult.className = 'mt-3 text-sm text-red-400';
+                testResult.textContent = '❌ Connection failed! Check your URL and make sure Colab is running.';
+                testResult.classList.remove('hidden');
             }
         }
+
+        async function testConnection() {
+            await checkServerStatus();
+        }
+
+        // ==================== FETCH VIDEO INFO ====================
+        async function fetchMetadata() {
+            const url = document.getElementById('videoUrl').value.trim();
+            const apiInput = document.getElementById('apiBaseUrl').value.trim();
+            
+            if (!url || !apiInput) {
+                showError('URL & Backend URL இரண்டும் தேவை!');
+                return;
+            }
+
+            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+                showError('Please enter a valid YouTube URL');
+                return;
+            }
+
+            apiBaseUrl = apiInput.replace(/\/$/, '');
+            currentVideoUrl = url;
+
+            // Show loading
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            document.getElementById('displayArea').classList.add('hidden');
+            document.getElementById('progressArea').classList.add('hidden');
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/get_info`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Display video info
+                document.getElementById('vidTitle').textContent = data.title || 'Unknown Title';
+                document.getElementById('vidThumb').src = data.thumbnail || 'https://via.placeholder.com/320x180?text=No+Thumbnail';
+                document.getElementById('vidDuration').textContent = formatDuration(data.duration);
+
+                // Render formats
+                renderVideoFormats(data.video || []);
+                renderAudioFormats(data.audio || []);
+
+                // Show display area
+                document.getElementById('displayArea').classList.remove('hidden');
+                
+            } catch (error) {
+                showError('Failed to fetch video info: ' + error.message);
+            } finally {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+            }
+        }
+
+        function renderVideoFormats(formats) {
+            const container = document.getElementById('vList');
+            container.innerHTML = '';
+
+            if (!formats || formats.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 col-span-2 text-center py-4">No video formats available</p>';
+                return;
+            }
+
+            formats.forEach(format => {
+                const btn = document.createElement('button');
+                btn.className = 'format-card w-full p-4 bg-white/5 rounded-xl text-left hover:bg-white/10 transition';
+                btn.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white">${format.res || 'Unknown'}</div>
+                            <div class="text-xs text-slate-400">${format.ext || 'mp4'}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-blue-400">${format.filesize ? formatBytes(format.filesize) : 'Size N/A'}</div>
+                        </div>
+                    </div>
+                `;
+                btn.onclick = () => selectFormat(format.id, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function renderAudioFormats(formats) {
+            const container = document.getElementById('aList');
+            container.innerHTML = '';
+
+            if (!formats || formats.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 col-span-2 text-center py-4">No audio formats available</p>';
+                return;
+            }
+
+            formats.forEach(format => {
+                const btn = document.createElement('button');
+                btn.className = 'format-card w-full p-4 bg-white/5 rounded-xl text-left hover:bg-white/10 transition';
+                btn.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold text-white">${format.abr || '128kbps'}</div>
+                            <div class="text-xs text-slate-400">${format.ext || 'mp3'}</div>
+                        </div>
+                    </div>
+                `;
+                btn.onclick = () => selectFormat(format.id, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectFormat(formatId, element) {
+            // Remove previous selection
+            document.querySelectorAll('.format-card').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Add selection
+            element.classList.add('selected');
+            selectedFormat = formatId;
+            
+            // Start download automatically
+            startDownload();
+        }
+
+        // ==================== DOWNLOAD FUNCTION ====================
+        async function startDownload() {
+            if (!selectedFormat) {
+                showError('Please select a format first');
+                return;
+            }
+
+            const mode = document.querySelector('input[name="target"]:checked').value;
+
+            // Show progress area
+            document.getElementById('progressArea').classList.remove('hidden');
+            document.getElementById('downloadReady').classList.add('hidden');
+            document.getElementById('statusLabel').textContent = '🚀 Starting download...';
+            document.getElementById('pBar').style.width = '0%';
+            document.getElementById('pPercent').textContent = '0%';
+
+            // Start progress tracking
+            startProgressTracking();
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/download`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        url: currentVideoUrl,
+                        format_id: selectedFormat,
+                        mode: mode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (data.status === 'ready') {
+                    stopProgressTracking();
+                    
+                    document.getElementById('statusLabel').textContent = '✅ Download Complete!';
+                    document.getElementById('downloadReady').classList.remove('hidden');
+                    
+                    const link = document.getElementById('finalLink');
+                    link.href = `${apiBaseUrl}/stream/${data.file_id}`;
+                    link.download = data.name || 'video.mp4';
+                    
+                    // Auto click after 1 second
+                    setTimeout(() => {
+                        link.click();
+                    }, 1000);
+
+                    // Load files list
+                    loadDriveFiles();
+                }
+
+            } catch (error) {
+                stopProgressTracking();
+                showError('Download failed: ' + error.message);
+                document.getElementById('progressArea').classList.add('hidden');
+            }
+        }
+
+        function startProgressTracking() {
+            progressTimer = setInterval(async () => {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/get_progress`);
+                    const data = await response.json();
+
+                    const percent = data.percent || '0';
+                    document.getElementById('pBar').style.width = percent + '%';
+                    document.getElementById('pPercent').textContent = percent + '%';
+                    
+                    document.getElementById('downloadSpeed').textContent = `Speed: ${data.speed || '--'}`;
+                    document.getElementById('downloadEta').textContent = `Time left: ${data.eta || '--'}`;
+
+                    if (percent === '100') {
+                        document.getElementById('statusLabel').textContent = '⚙️ Processing video...';
+                    }
+                } catch (error) {
+                    console.log('Progress tracking error:', error);
+                }
+            }, 1000);
+        }
+
+        function stopProgressTracking() {
+            if (progressTimer) {
+                clearInterval(progressTimer);
+                progressTimer = null;
+            }
+        }
+
+        // ==================== LOAD DRIVE FILES ====================
+        async function loadDriveFiles() {
+            if (!apiBaseUrl) return;
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/list_files`);
+                const data = await response.json();
+
+                const container = document.getElementById('filesContainer');
+                const drivePathDiv = document.getElementById('drivePath');
+
+                if (data.files && data.files.length > 0) {
+                    container.innerHTML = '';
+                    
+                    // Show last 10 files
+                    data.files.slice(-10).reverse().forEach(file => {
+                        const fileDiv = document.createElement('div');
+                        fileDiv.className = 'flex justify-between items-center p-3 bg-white/5 rounded-lg';
+                        fileDiv.innerHTML = `
+                            <span class="text-white text-sm truncate max-w-[200px]">📄 ${file.name}</span>
+                            <span class="text-slate-400 text-xs">${formatBytes(file.size)}</span>
+                        `;
+                        container.appendChild(fileDiv);
+                    });
+
+                    drivePathDiv.textContent = `📁 Drive: ${data.path || '/content/drive/MyDrive/Colab_Downloads'}`;
+                } else {
+                    container.innerHTML = '<p class="text-slate-400 text-center py-4">No files downloaded yet</p>';
+                    drivePathDiv.textContent = '';
+                }
+            } catch (error) {
+                console.log('Load files error:', error);
+            }
+        }
+
+        // ==================== INITIALIZATION ====================
+        window.onload = function() {
+            // Auto check server status if URL exists
+            const savedUrl = localStorage.getItem('apiBaseUrl');
+            if (savedUrl) {
+                document.getElementById('apiBaseUrl').value = savedUrl;
+                checkServerStatus();
+            }
+
+            // Save URL when changed
+            document.getElementById('apiBaseUrl').addEventListener('change', function() {
+                localStorage.setItem('apiBaseUrl', this.value);
+            });
+        };
     </script>
 </body>
 </html>
