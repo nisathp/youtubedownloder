@@ -3,59 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Downloader Pro - v2.5</title>
+    <title>🎥 YouTube Downloader Pro v4.0 - Anti-Ban</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .loader { border-top-color: #3b82f6; animation: spinner 1s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader { @apply w-8 h-8 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin; }
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .btn-primary { @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300; }
+        .btn-success { @apply bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-4 px-12 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 inline-block; }
     </style>
 </head>
-<body class="bg-[#0f172a] text-slate-200 min-h-screen p-4">
-
-    <div class="max-w-4xl mx-auto bg-[#1e293b] rounded-3xl shadow-2xl overflow-hidden border border-slate-700/50 p-6">
-        <h1 class="text-3xl font-bold text-center text-white mb-6">YouTube Downloader <span class="text-blue-500 text-sm">v2.5</span></h1>
-
-        <div class="mb-6 p-4 bg-[#0f172a] rounded-2xl border border-slate-700">
-            <input type="text" id="apiBaseUrl" placeholder="Cloudflare or NGROK URL..." 
-                   class="w-full bg-transparent border-none outline-none text-blue-400 font-mono text-sm">
-        </div>
-
-        <div class="flex flex-col md:flex-row gap-2 mb-8">
-            <input type="text" id="videoUrl" placeholder="Paste YouTube Link..." class="flex-1 bg-[#0f172a] border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500">
-            <button onclick="fetchInfo()" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl font-bold transition">Analyze</button>
-        </div>
-
-        <div id="progressArea" class="hidden mb-6 p-4 bg-slate-800 rounded-xl">
-            <div class="flex justify-between text-xs font-bold mb-2">
-                <span id="statusLabel" class="text-blue-400">Processing...</span>
-                <span id="pPercent">0%</span>
-            </div>
-            <div class="w-full bg-slate-700 h-3 rounded-full overflow-hidden">
-                <div id="pBar" class="bg-blue-500 h-full transition-all" style="width: 0%"></div>
-            </div>
-            <div id="readyArea" class="hidden mt-4 text-center">
-                <a id="finalLink" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-bold inline-block">Click to Save to PC</a>
+<body class="gradient-bg min-h-screen py-12 px-4">
+    <div class="max-w-4xl mx-auto bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl p-8">
+        
+        <div class="text-center mb-12">
+            <h1 class="text-6xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent mb-4">
+                YouTube Downloader
+            </h1>
+            <div class="flex flex-wrap justify-center gap-4 text-sm bg-black/20 px-6 py-3 rounded-2xl">
+                <span class="bg-emerald-500/30 text-emerald-400 px-4 py-2 rounded-xl text-xs font-bold">v4.0 Anti-Ban</span>
+                <span class="text-blue-400">🔒 Proxy + Tor + iOS Bypass</span>
+                <span class="text-purple-400">🎯 1080p HQ FFmpeg Merge</span>
             </div>
         </div>
 
-        <div id="result" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="md:col-span-1">
-                <img id="thumb" class="w-full rounded-xl shadow-lg border border-slate-700">
-                <h3 id="title" class="mt-3 font-bold text-sm"></h3>
-            </div>
-            <div class="md:col-span-2 space-y-4">
-                <div class="flex gap-4 p-2 bg-slate-800 rounded-lg justify-center text-sm">
-                    <label><input type="radio" name="mode" value="local" checked> Local PC</label>
-                    <label><input type="radio" name="mode" value="drive"> G-Drive</label>
+        <!-- Backend URL -->
+        <div class="mb-10 p-6 bg-white/5 rounded-3xl border-2 border-dashed border-blue-500/50">
+            <label class="block text-sm font-bold text-blue-400 uppercase mb-3 tracking-wider">🌐 Backend URL (Copy from Colab)</label>
+            <input type="url" id="apiBaseUrl" placeholder="https://abc-123.trycloudflare.com" 
+                   class="w-full bg-white/10 border border-white/30 rounded-2xl px-6 py-4 text-lg text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none backdrop-blur-sm">
+        </div>
+
+        <!-- Input -->
+        <div class="flex flex-col lg:flex-row gap-6 mb-12">
+            <input type="url" id="videoUrl" placeholder="🔗 YouTube URL paste செய்யவும் (Age-restricted OK)..." 
+                   class="flex-1 bg-white/10 border border-white/30 rounded-3xl px-8 py-6 text-xl text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none backdrop-blur-sm">
+            <button onclick="fetchMetadata()" class="btn-primary text-xl min-w-[160px]">
+                🔍 Analyze
+            </button>
+        </div>
+
+        <!-- Progress -->
+        <div id="progressArea" class="hidden mb-12 p-10 bg-white/5 rounded-3xl border border-white/20 backdrop-blur-xl">
+            <div class="flex justify-between items-center mb-8">
+                <span id="statusLabel" class="text-2xl font-bold text-blue-400">🚀 Starting download...</span>
+                <div class="flex items-center gap-4">
+                    <span id="pPercent" class="text-4xl font-black text-white">0%</span>
+                    <div class="loader"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+            </div>
+            <div class="w-full bg-white/10 h-6 rounded-3xl overflow-hidden">
+                <div id="pBar" class="bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 h-full rounded-3xl shadow-lg transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <div id="downloadReady" class="hidden mt-12 text-center">
+                <a id="finalLink" class="btn-success text-xl">
+                    📥 Download Video
+                </a>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="displayArea" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-1 text-center">
+                <div class="w-full aspect-video bg-white/10 rounded-3xl overflow-hidden shadow-2xl border border-white/20">
+                    <img id="vidThumb" class="w-full h-full object-cover" src="">
+                </div>
+                <h3 id="vidTitle" class="mt-6 text-xl font-bold text-white line-clamp-2 px-4"></h3>
+                <p id="vidDuration" class="text-lg text-slate-400 mt-2"></p>
+            </div>
+            
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white/10 p-6 rounded-3xl border border-white/20">
+                    <div class="flex flex-wrap gap-8 justify-center">
+                        <label class="flex items-center gap-3 cursor-pointer text-lg">
+                            <input type="radio" name="target" value="local" checked class="w-6 h-6 text-blue-600 bg-white/20 rounded">
+                            <span class="font-bold">💾 Local (Fast)</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer text-lg">
+                            <input type="radio" name="target" value="drive" class="w-6 h-6 text-blue-600 bg-white/20 rounded">
+                            <span class="font-bold">☁️ Google Drive</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                        <h4 class="text-blue-400 text-xs font-bold mb-2 uppercase">Video (High Quality)</h4>
-                        <div id="vButtons" class="space-y-2"></div>
+                        <h4 class="text-blue-400 text-lg font-black uppercase mb-6 tracking-widest text-center">🎥 HQ Video</h4>
+                        <div id="vList" class="space-y-4"></div>
                     </div>
                     <div>
-                        <h4 class="text-yellow-500 text-xs font-bold mb-2 uppercase">Audio Only</h4>
-                        <div id="aButtons" class="space-y-2"></div>
+                        <h4 class="text-yellow-400 text-lg font-black uppercase mb-6 tracking-widest text-center">🎵 Audio Only</h4>
+                        <div id="aList" class="space-y-4"></div>
                     </div>
                 </div>
             </div>
@@ -63,75 +100,124 @@
     </div>
 
     <script>
-        async function fetchInfo() {
+        let progressTimer = null;
+
+        async function fetchMetadata() {
             const url = document.getElementById('videoUrl').value.trim();
-            const api = document.getElementById('apiBaseUrl').value.trim();
-            if(!url || !api) return alert("URL-களைச் சரிபார்க்கவும்!");
+            let api = document.getElementById('apiBaseUrl').value.trim();
+            if (!url || !api) return alert('URL & Backend URL தேவை!');
 
-            const res = await fetch(`${api}/get_info`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({url})
-            });
-            const data = await res.json();
-            
-            document.getElementById('result').classList.remove('hidden');
-            document.getElementById('title').innerText = data.title;
-            document.getElementById('thumb').src = data.thumbnail;
+            if (api.endsWith('/')) api = api.slice(0, -1);
+            document.getElementById('displayArea').classList.add('hidden');
+            document.getElementById('progressArea').classList.add('hidden');
 
-            const renderBtn = (container, list) => {
-                container.innerHTML = '';
-                list.forEach(item => {
-                    const btn = document.createElement('button');
-                    btn.className = "w-full bg-slate-700 hover:bg-slate-600 p-2 rounded text-xs text-left transition";
-                    btn.innerText = item.res || `${item.abr}kbps`;
-                    btn.onclick = () => startDownload(item.id);
-                    container.appendChild(btn);
+            try {
+                const res = await fetch(`${api}/get_info`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url})
                 });
-            };
-            renderBtn(document.getElementById('vButtons'), data.video);
-            renderBtn(document.getElementById('aButtons'), data.audio);
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                document.getElementById('vidTitle').textContent = data.title;
+                document.getElementById('vidThumb').src = data.thumbnail || '';
+                document.getElementById('vidDuration').textContent = formatDuration(data.duration);
+
+                renderList('vList', data.video, true);
+                renderList('aList', data.audio, false);
+                document.getElementById('displayArea').classList.remove('hidden');
+            } catch (err) {
+                alert(`Error: ${err.message}\nTry different Cloudflare URL`);
+            }
         }
 
-        async function startDownload(fId) {
+        function renderList(listId, items, isVideo) {
+            const container = document.getElementById(listId);
+            container.innerHTML = '';
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = `w-full p-6 rounded-2xl border-2 transition-all duration-300 hover:scale-[1.02] shadow-xl ${
+                    isVideo ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-400 hover:from-blue-400/40 hover:to-purple-400/40' :
+                             'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-400 hover:from-yellow-400/40 hover:to-orange-400/40'
+                }`;
+                btn.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-black text-xl">${item.res || item.abr}</div>
+                            ${item.size ? `<div class="text-sm text-slate-400">${formatBytes(item.size)}</div>` : ''}
+                        </div>
+                        <span class="px-4 py-2 bg-black/30 rounded-xl text-sm font-bold">${item.ext}</span>
+                    </div>
+                `;
+                btn.onclick = () => startDownload(item.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '';
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        async function startDownload(formatId) {
             const url = document.getElementById('videoUrl').value.trim();
-            const api = document.getElementById('apiBaseUrl').value.trim();
-            const mode = document.querySelector('input[name="mode"]:checked').value;
+            const mode = document.querySelector('input[name="target"]:checked').value;
+            let api = document.getElementById('apiBaseUrl').value.trim();
+            if (api.endsWith('/')) api = api.slice(0, -1);
 
             document.getElementById('progressArea').classList.remove('hidden');
-            document.getElementById('readyArea').classList.add('hidden');
-            
-            // Start Progress Tracking
-            const timer = setInterval(async () => {
-                const pRes = await fetch(`${api}/get_progress`);
-                const pData = await pRes.json();
-                document.getElementById('pBar').style.width = pData.percent + '%';
-                document.getElementById('pPercent').innerText = pData.percent + '%';
-                if(pData.percent == "100") document.getElementById('statusLabel').innerText = "Merging Files...";
+            document.getElementById('downloadReady').classList.add('hidden');
+            document.getElementById('statusLabel').textContent = '🚀 Anti-ban proxy connecting...';
+            document.getElementById('pPercent').textContent = '0%';
+
+            progressTimer = setInterval(async () => {
+                try {
+                    const pRes = await fetch(`${api}/get_progress`);
+                    const pData = await pRes.json();
+                    const percent = pData.percent || '0%';
+                    document.getElementById('pBar').style.width = percent;
+                    document.getElementById('pPercent').textContent = percent;
+                    
+                    if (percent === '100%') {
+                        document.getElementById('statusLabel').textContent = '⚙️ FFmpeg merging HQ streams...';
+                    }
+                } catch {}
             }, 1000);
 
             try {
                 const res = await fetch(`${api}/download`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url, format_id: fId, mode: mode})
+                    body: JSON.stringify({url, format_id: formatId, mode})
                 });
                 const result = await res.json();
-                clearInterval(timer);
+                clearInterval(progressTimer);
 
-                if(result.status === 'ready') {
-                    document.getElementById('statusLabel').innerText = "Download Ready!";
-                    document.getElementById('readyArea').classList.remove('hidden');
+                if (result.status === 'ready') {
+                    document.getElementById('statusLabel').textContent = '✅ Download Ready!';
+                    document.getElementById('downloadReady').classList.remove('hidden');
                     const link = document.getElementById('finalLink');
                     link.href = `${api}/stream/${result.file_id}`;
                     link.download = result.name;
+                    link.textContent = `📥 Download ${formatBytes(result.size || 0)}`;
                 } else {
-                    alert(result.message);
+                    alert(result.message || '✅ Saved to Drive!');
                     document.getElementById('progressArea').classList.add('hidden');
                 }
             } catch (e) {
-                clearInterval(timer);
-                alert("Connection Error! (Tunnel might be busy)");
+                clearInterval(progressTimer);
+                alert('❌ Failed! Try different Cloudflare URL from Colab');
             }
         }
     </script>
