@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎥 YouTube Downloader Pro v6.0 - All Formats</title>
+    <title>🎥 YouTube Downloader Pro v6.0 - Secure Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes gradient {
@@ -71,9 +71,94 @@
         .quality-720p { background: rgba(16, 185, 129, 0.3); color: #34d399; }
         .quality-480p { background: rgba(245, 158, 11, 0.3); color: #fbbf24; }
         .quality-360p { background: rgba(139, 92, 246, 0.3); color: #c084fc; }
+        
+        /* Password Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        .inspect-disabled {
+            position: relative;
+        }
+        .inspect-disabled::after {
+            display: none;
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen py-8 px-4 font-sans">
+    <!-- Password Protection Modal -->
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto flex items-center justify-center mb-4">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-2">🔒 Inspect Mode Locked</h3>
+                <p class="text-slate-400">Enter credentials to enable right-click & inspect</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Username</label>
+                    <input type="text" id="modalUsername" 
+                           class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none"
+                           placeholder="Enter username">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                    <input type="password" id="modalPassword" 
+                           class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none"
+                           placeholder="Enter password">
+                </div>
+                
+                <div id="modalError" class="hidden bg-red-500/20 border border-red-500/30 rounded-lg p-3">
+                    <p class="text-red-400 text-sm text-center">❌ Invalid username or password!</p>
+                </div>
+                
+                <div class="flex gap-4 pt-4">
+                    <button id="modalSubmit" class="flex-1 btn-primary py-3 rounded-xl text-white font-bold">
+                        🔓 Unlock
+                    </button>
+                    <button id="modalCancel" class="flex-1 bg-white/10 py-3 rounded-xl text-white font-bold hover:bg-white/20 transition">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-10">
@@ -83,11 +168,25 @@
                 </span>
             </h1>
             <div class="flex flex-wrap justify-center gap-3 text-sm">
-                <span class="bg-blue-500/20 text-blue-400 px-4 py-2 rounded-full font-bold border border-blue-500/30">🚀 v6.0 All Formats</span>
+                <span class="bg-blue-500/20 text-blue-400 px-4 py-2 rounded-full font-bold border border-blue-500/30">🚀 v6.0 Secure Edition</span>
                 <span class="bg-purple-500/20 text-purple-400 px-4 py-2 rounded-full font-bold border border-purple-500/30">🛡️ 144p to 4K</span>
                 <span class="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full font-bold border border-emerald-500/30">🎵 Video to MP3</span>
                 <span class="bg-yellow-500/20 text-yellow-400 px-4 py-2 rounded-full font-bold border border-yellow-500/30">💾 Local + Drive</span>
             </div>
+        </div>
+
+        <!-- Inspect Protection Card -->
+        <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mb-6">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center gap-4">
+                    <div id="inspectIndicator" class="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
+                    <span id="inspectStatusText" class="text-white font-semibold">🔒 Right-click: Disabled</span>
+                </div>
+                <button id="enableInspectBtn" class="px-6 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-xl text-white font-bold hover:shadow-xl transition">
+                    🔑 Enable Inspect Mode
+                </button>
+            </div>
+            <p class="text-sm text-slate-400 mt-2">Developer tools are password protected. Click the button to unlock.</p>
         </div>
 
         <!-- Server Status Card -->
@@ -111,7 +210,7 @@
             </label>
             <div class="flex flex-col md:flex-row gap-4">
                 <input type="url" id="apiBaseUrl" 
-                       placeholder="https://xxxx-xx-xx-xx-xx.ngrok-free.app or https://xxxx.trycloudflare.com" 
+                       placeholder="https://xxxx-xx-xx-xx-xx.ngrok-free.app" 
                        class="flex-1 bg-white/10 border border-white/30 rounded-xl px-6 py-4 text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none">
                 <button onclick="testConnection()" class="px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-bold hover:shadow-xl transition">
                     🔌 Test Connection
@@ -127,7 +226,7 @@
             </label>
             <div class="flex flex-col md:flex-row gap-4">
                 <input type="url" id="videoUrl" 
-                       placeholder="https://youtube.com/watch?v=... (Age-restricted videos also work)" 
+                       placeholder="https://youtube.com/watch?v=..." 
                        value="https://www.youtube.com/watch?v=HAxm8n9QY50"
                        class="flex-1 bg-white/10 border border-white/30 rounded-xl px-6 py-4 text-white placeholder-slate-400 focus:border-purple-400 focus:outline-none">
                 <button onclick="fetchMetadata()" class="px-8 py-4 btn-primary rounded-xl text-white font-bold text-lg min-w-[160px]">
@@ -193,7 +292,7 @@
 
                 <!-- Format Selection -->
                 <div class="lg:col-span-2">
-                    <!-- Storage Mode Selection - ENHANCED -->
+                    <!-- Storage Mode Selection -->
                     <div class="bg-white/5 rounded-xl p-6 mb-6">
                         <h4 class="text-white font-bold mb-4 text-center">📦 Save Options</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -229,7 +328,7 @@
                         </div>
                     </div>
 
-                    <!-- Video Formats - ALL QUALITIES -->
+                    <!-- Video Formats -->
                     <div class="mb-6">
                         <h4 class="text-blue-400 text-lg font-bold mb-4 flex items-center gap-2">
                             <span>🎥 All Video Qualities</span>
@@ -238,7 +337,7 @@
                         <div id="vList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2"></div>
                     </div>
 
-                    <!-- Audio Formats - ALL BITRATES -->
+                    <!-- Audio Formats -->
                     <div>
                         <h4 class="text-yellow-400 text-lg font-bold mb-4 flex items-center gap-2">
                             <span>🎵 All Audio Formats</span>
@@ -266,9 +365,117 @@
     </div>
 
     <script>
+        // ==================== INSPECT PROTECTION ====================
+        let inspectAllowed = false;
+        
+        // Encrypted credentials (base64 of "youtube:YOUtube")
+        // This is the encrypted version - actual credentials: youtube / YOUtube
+        const ENCRYPTED_CREDENTIALS = "eW91dHViZTpZT1V0dWJl";  // base64 of "youtube:YOUtube"
+        
+        // Disable right-click by default
+        document.addEventListener('contextmenu', (e) => {
+            if (!inspectAllowed) {
+                e.preventDefault();
+                showPasswordModal();
+            }
+        });
+        
+        // Disable keyboard shortcuts for developer tools
+        document.addEventListener('keydown', (e) => {
+            if (!inspectAllowed) {
+                // F12
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    showPasswordModal();
+                }
+                // Ctrl+Shift+I / Cmd+Opt+I
+                if ((e.ctrlKey && e.shiftKey && e.key === 'I') || (e.metaKey && e.altKey && e.key === 'I')) {
+                    e.preventDefault();
+                    showPasswordModal();
+                }
+                // Ctrl+Shift+J / Cmd+Opt+J
+                if ((e.ctrlKey && e.shiftKey && e.key === 'J') || (e.metaKey && e.altKey && e.key === 'J')) {
+                    e.preventDefault();
+                    showPasswordModal();
+                }
+                // Ctrl+U (view source)
+                if (e.ctrlKey && e.key === 'u') {
+                    e.preventDefault();
+                    showPasswordModal();
+                }
+            }
+        });
+        
+        // Show password modal
+        function showPasswordModal() {
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('modalUsername').value = '';
+            document.getElementById('modalPassword').value = '';
+            document.getElementById('modalError').classList.add('hidden');
+        }
+        
+        // Hide modal
+        function hidePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+        
+        // Verify credentials using decryption
+        function verifyCredentials(username, password) {
+            // Create the string in the same format
+            const inputStr = `${username}:${password}`;
+            // Encrypt it using base64
+            const inputEncrypted = btoa(inputStr);
+            // Compare with stored encrypted credentials
+            return inputEncrypted === ENCRYPTED_CREDENTIALS;
+        }
+        
+        // Enable inspect
+        function enableInspect() {
+            inspectAllowed = true;
+            document.getElementById('inspectIndicator').className = 'w-4 h-4 rounded-full bg-green-500';
+            document.getElementById('inspectStatusText').textContent = '🔓 Right-click: Enabled';
+            hidePasswordModal();
+            
+            // Show success message
+            const testResult = document.getElementById('connectionTestResult');
+            testResult.className = 'mt-3 text-sm text-emerald-400';
+            testResult.textContent = '✅ Inspect mode unlocked successfully!';
+            testResult.classList.remove('hidden');
+            
+            setTimeout(() => {
+                testResult.classList.add('hidden');
+            }, 3000);
+        }
+        
+        // Event listeners for modal
+        document.getElementById('enableInspectBtn').addEventListener('click', showPasswordModal);
+        
+        document.getElementById('modalSubmit').addEventListener('click', () => {
+            const username = document.getElementById('modalUsername').value.trim();
+            const password = document.getElementById('modalPassword').value;
+            
+            if (verifyCredentials(username, password)) {
+                enableInspect();
+            } else {
+                document.getElementById('modalError').classList.remove('hidden');
+                document.getElementById('modalUsername').value = '';
+                document.getElementById('modalPassword').value = '';
+            }
+        });
+        
+        document.getElementById('modalCancel').addEventListener('click', hidePasswordModal);
+        
+        // Close modal if click outside
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('passwordModal');
+            if (e.target === modal) {
+                hidePasswordModal();
+            }
+        });
+
         // ==================== GLOBAL VARIABLES ====================
         let selectedFormat = null;
-        let selectedType = 'video'; // 'video' or 'audio'
+        let selectedType = 'video';
         let currentVideoUrl = '';
         let progressTimer = null;
         let apiBaseUrl = '';
@@ -355,6 +562,11 @@
 
         // ==================== FETCH VIDEO INFO ====================
         async function fetchMetadata() {
+            if (!inspectAllowed) {
+                showPasswordModal();
+                return;
+            }
+            
             const url = document.getElementById('videoUrl').value.trim();
             const apiInput = document.getElementById('apiBaseUrl').value.trim();
             
@@ -484,6 +696,11 @@
 
         // ==================== DOWNLOAD FUNCTION ====================
         async function startDownload() {
+            if (!inspectAllowed) {
+                showPasswordModal();
+                return;
+            }
+            
             if (!selectedFormat) {
                 showError('Please select a format first');
                 return;
@@ -531,40 +748,9 @@
                     throw new Error(data.error);
                 }
 
-                if (data.status === 'ready') {
-                    stopProgressTracking();
-                    
-                    document.getElementById('statusLabel').textContent = '✅ Complete!';
-                    document.getElementById('downloadReady').classList.remove('hidden');
-                    
-                    const link = document.getElementById('finalLink');
-                    const message = document.getElementById('downloadMessage');
-                    
-                    link.href = `${apiBaseUrl}/stream/${data.file_id}`;
-                    link.download = data.name;
-                    
-                    if (data.mode === 'local') {
-                        if (data.type === 'video') {
-                            link.textContent = '📥 Download Video';
-                            message.textContent = '✅ Saved to Drive & Ready for Download!';
-                        } else {
-                            link.textContent = '🎵 Download MP3';
-                            message.textContent = '✅ MP3 Saved to Drive & Ready for Download!';
-                        }
-                        setTimeout(() => {
-                            link.click();
-                        }, 1000);
-                    } else {
-                        if (data.type === 'video') {
-                            link.textContent = '📁 Video Saved to Drive';
-                            message.textContent = '✅ File saved to Google Drive only';
-                        } else {
-                            link.textContent = '📁 MP3 Saved to Drive';
-                            message.textContent = '✅ MP3 saved to Google Drive only';
-                        }
-                    }
-
-                    loadDriveFiles();
+                if (data.status === 'started') {
+                    // Start polling for completion
+                    checkDownloadStatus(data.file_id, mode, selectedType);
                 }
 
             } catch (error) {
@@ -604,6 +790,63 @@
             if (progressTimer) {
                 clearInterval(progressTimer);
                 progressTimer = null;
+            }
+        }
+
+        async function checkDownloadStatus(fileId, mode, type) {
+            let completed = false;
+            let attempts = 0;
+            
+            while (!completed && attempts < 60) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                try {
+                    const response = await fetch(`${apiBaseUrl}/get_progress?file_id=${fileId}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'completed') {
+                        completed = true;
+                        stopProgressTracking();
+                        
+                        document.getElementById('statusLabel').textContent = '✅ Complete!';
+                        document.getElementById('downloadReady').classList.remove('hidden');
+                        
+                        const link = document.getElementById('finalLink');
+                        const message = document.getElementById('downloadMessage');
+                        
+                        link.href = `${apiBaseUrl}/stream/${data.file_id}`;
+                        link.download = data.name;
+                        
+                        if (mode === 'local') {
+                            if (type === 'video') {
+                                link.textContent = '📥 Download Video';
+                                message.textContent = '✅ Saved to Drive & Ready for Download!';
+                            } else {
+                                link.textContent = '🎵 Download MP3';
+                                message.textContent = '✅ MP3 Saved to Drive & Ready for Download!';
+                            }
+                            setTimeout(() => {
+                                link.click();
+                            }, 1000);
+                        } else {
+                            if (type === 'video') {
+                                link.textContent = '📁 Video Saved to Drive';
+                                message.textContent = '✅ File saved to Google Drive only';
+                            } else {
+                                link.textContent = '📁 MP3 Saved to Drive';
+                                message.textContent = '✅ MP3 saved to Google Drive only';
+                            }
+                        }
+                        
+                        loadDriveFiles();
+                        break;
+                    } else if (data.status === 'error') {
+                        throw new Error(data.error);
+                    }
+                } catch (error) {
+                    console.log('Status check error:', error);
+                }
+                attempts++;
             }
         }
 
