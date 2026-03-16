@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎥 YouTube Downloader Pro - Secure Edition</title>
+    <title>🎥 YouTube Downloader Pro - Multi Language</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @keyframes gradient {
@@ -15,23 +15,80 @@
             background-size: 200% 200%;
             animation: gradient 3s ease infinite;
         }
-        .loader {
-            width: 48px;
-            height: 48px;
-            border: 5px solid rgba(59, 130, 246, 0.3);
-            border-bottom-color: #3b82f6;
-            border-radius: 50%;
-            display: inline-block;
-            animation: rotation 1s linear infinite;
-        }
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
         .gradient-bg {
             background: linear-gradient(-45deg, #1e293b, #0f172a, #1e1b4b, #0f172a);
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .toggle-switch.disabled {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            opacity: 0.7;
+        }
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.enabled .toggle-slider {
+            transform: translateX(30px);
+        }
+        .language-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            outline: none;
+            font-size: 14px;
+        }
+        .language-select option {
+            background: #1e293b;
+            color: white;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid #3b82f6;
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            animation: modalPop 0.3s ease;
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
@@ -39,73 +96,7 @@
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.5);
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-success:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.5);
-        }
-        .format-card {
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            cursor: pointer;
-        }
-        .format-card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px -10px rgba(59, 130, 246, 0.3);
-        }
-        .format-card.selected {
-            border-color: #3b82f6;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-        }
-        .quality-badge {
-            @apply text-xs px-2 py-1 rounded-full font-bold;
-        }
-        .quality-4k { background: rgba(239, 68, 68, 0.3); color: #f87171; }
-        .quality-1080p { background: rgba(59, 130, 246, 0.3); color: #60a5fa; }
-        .quality-720p { background: rgba(16, 185, 129, 0.3); color: #34d399; }
-        .quality-480p { background: rgba(245, 158, 11, 0.3); color: #fbbf24; }
-        .quality-360p { background: rgba(139, 92, 246, 0.3); color: #c084fc; }
-        
-        /* Password Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            border: 2px solid rgba(59, 130, 246, 0.3);
-            border-radius: 24px;
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
+            box-shadow: 0 10px 25px -5px #3b82f6;
         }
         .toast-message {
             position: fixed;
@@ -116,89 +107,105 @@
             padding: 12px 24px;
             border-radius: 50px;
             font-weight: bold;
-            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.5);
-            z-index: 1001;
+            z-index: 10000;
             animation: slideIn 0.3s ease;
         }
         @keyframes slideIn {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        .format-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        .format-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .format-card.selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.2);
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen py-8 px-4 font-sans">
-    <!-- Password Protection Modal -->
+    <!-- Password Modal -->
     <div id="passwordModal" class="modal-overlay">
         <div class="modal-content">
-            <div class="text-center mb-6">
+            <div class="text-center mb-8">
                 <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto flex items-center justify-center mb-4">
                     <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                     </svg>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2">🔒 Inspect Mode Locked</h3>
-                <p class="text-slate-400">Enter credentials to enable right-click & inspect</p>
-                <p class="text-xs text-slate-500 mt-2">Default: youtube / YOUtube</p>
+                <h3 id="modalTitle" class="text-2xl font-bold text-white mb-2">🔐 Enter Credentials</h3>
+                <p id="modalSubtitle" class="text-slate-400">Enable inspect mode requires password</p>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">Username</label>
                     <input type="text" id="modalUsername" 
                            class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none"
-                           placeholder="Enter username">
+                           placeholder="Username">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
                     <input type="password" id="modalPassword" 
                            class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:border-blue-400 focus:outline-none"
-                           placeholder="Enter password">
+                           placeholder="Password">
                 </div>
                 
                 <div id="modalError" class="hidden bg-red-500/20 border border-red-500/30 rounded-lg p-3">
                     <p class="text-red-400 text-sm text-center">❌ Invalid username or password!</p>
                 </div>
                 
-                <div class="flex gap-4 pt-4">
-                    <button id="modalSubmit" class="flex-1 btn-primary py-3 rounded-xl text-white font-bold">
-                        🔓 Unlock
-                    </button>
-                    <button id="modalCancel" class="flex-1 bg-white/10 py-3 rounded-xl text-white font-bold hover:bg-white/20 transition">
-                        Cancel
-                    </button>
-                </div>
+                <button id="modalSubmit" class="w-full btn-primary py-3 rounded-xl text-white font-bold">
+                    🔓 Verify & Enable
+                </button>
+                <button id="modalCancel" class="w-full bg-white/10 py-3 rounded-xl text-white font-bold hover:bg-white/20 transition">
+                    Cancel
+                </button>
             </div>
         </div>
     </div>
 
     <div class="max-w-6xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-10">
-            <h1 class="text-5xl md:text-7xl font-black mb-4">
-                <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent animate-gradient">
+        <!-- Header with Language Dropdown -->
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl md:text-5xl font-black">
+                <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">
                     YouTube Downloader
                 </span>
             </h1>
-            <div class="flex flex-wrap justify-center gap-3 text-sm">
-                <span class="bg-blue-500/20 text-blue-400 px-4 py-2 rounded-full font-bold border border-blue-500/30">🚀 v6.0 Secure Edition</span>
-                <span class="bg-purple-500/20 text-purple-400 px-4 py-2 rounded-full font-bold border border-purple-500/30">🛡️ Password Protected</span>
-                <span class="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full font-bold border border-emerald-500/30">🎵 Video to MP3</span>
-                <span class="bg-yellow-500/20 text-yellow-400 px-4 py-2 rounded-full font-bold border border-yellow-500/30">💾 Local Download</span>
-            </div>
+            
+            <!-- Language Dropdown -->
+            <select id="languageSelect" class="language-select">
+                <option value="ta" selected>🇮🇳 தமிழ்</option>
+                <option value="en">🇬🇧 English</option>
+                <option value="hi">🇮🇳 हिंदी</option>
+                <option value="te">🇮🇳 తెలుగు</option>
+                <option value="ml">🇮🇳 മലയാളം</option>
+                <option value="kn">🇮🇳 ಕನ್ನಡ</option>
+            </select>
         </div>
 
-        <!-- Inspect Protection Card -->
+        <!-- Inspect Toggle Button UI -->
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mb-6">
-            <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div id="inspectIndicator" class="w-4 h-4 rounded-full bg-red-500 animate-pulse"></div>
-                    <span id="inspectStatusText" class="text-white font-semibold">🔒 Right-click: Disabled</span>
+                    <div class="flex items-center gap-3">
+                        <span id="inspectIcon" class="text-2xl">🔒</span>
+                        <span id="inspectText" class="text-white font-semibold">Inspect Mode Disabled</span>
+                    </div>
+                    <!-- Toggle Switch -->
+                    <div id="inspectToggle" class="toggle-switch disabled" onclick="toggleInspect()">
+                        <div class="toggle-slider"></div>
+                    </div>
                 </div>
-                <button id="enableInspectBtn" class="px-6 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-xl text-white font-bold hover:shadow-xl transition">
-                    🔑 Enable Inspect Mode
-                </button>
+                <div class="text-sm text-slate-400">
+                    <span id="inspectStatus">Click to enable</span>
+                </div>
             </div>
-            <p class="text-sm text-slate-400 mt-2">Developer tools are password protected. Click the button to unlock.</p>
         </div>
 
         <!-- Server Status Card -->
@@ -217,8 +224,8 @@
 
         <!-- Backend URL Input -->
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mb-6">
-            <label class="block text-sm font-bold text-blue-400 uppercase mb-3 tracking-wider">
-                🌐 Backend URL (Your Render App URL)
+            <label id="backendLabel" class="block text-sm font-bold text-blue-400 uppercase mb-3 tracking-wider">
+                🌐 Backend URL
             </label>
             <div class="flex flex-col md:flex-row gap-4">
                 <input type="url" id="apiBaseUrl" 
@@ -233,7 +240,7 @@
 
         <!-- URL Input Section -->
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mb-6">
-            <label class="block text-sm font-bold text-purple-400 uppercase mb-3 tracking-wider">
+            <label id="urlLabel" class="block text-sm font-bold text-purple-400 uppercase mb-3 tracking-wider">
                 🔗 YouTube URL
             </label>
             <div class="flex flex-col md:flex-row gap-4">
@@ -251,8 +258,7 @@
         <div id="loadingIndicator" class="hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-12 mb-6">
             <div class="flex flex-col items-center justify-center gap-6">
                 <div class="loader"></div>
-                <p class="text-white text-xl font-semibold">Fetching video information...</p>
-                <p class="text-slate-400">This may take 5-10 seconds</p>
+                <p id="loadingText" class="text-white text-xl font-semibold">Fetching video information...</p>
             </div>
         </div>
 
@@ -260,30 +266,20 @@
         <div id="progressArea" class="hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-8 mb-6">
             <div class="flex flex-col gap-6">
                 <div class="flex justify-between items-center">
-                    <span id="statusLabel" class="text-2xl font-bold text-blue-400">🚀 Starting download...</span>
-                    <div class="flex items-center gap-4">
-                        <span id="pPercent" class="text-4xl font-black text-white">0%</span>
-                        <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    </div>
+                    <span id="statusLabel" class="text-2xl font-bold text-blue-400">Starting download...</span>
+                    <span id="pPercent" class="text-4xl font-black text-white">0%</span>
                 </div>
-                
-                <!-- Progress Bar -->
                 <div class="w-full bg-white/10 h-6 rounded-full overflow-hidden">
                     <div id="pBar" class="bg-gradient-to-r from-blue-500 via-purple-500 to-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
-                
-                <!-- Progress Details -->
                 <div class="flex justify-between text-slate-400">
                     <span id="downloadSpeed">Speed: --</span>
                     <span id="downloadEta">Time left: --</span>
                 </div>
-
-                <!-- Download Ready -->
                 <div id="downloadReady" class="hidden mt-6 text-center">
-                    <a id="finalLink" class="btn-success px-12 py-4 rounded-xl text-white font-bold text-xl inline-block transform hover:scale-105 transition">
+                    <a id="finalLink" class="bg-gradient-to-r from-green-500 to-emerald-600 px-12 py-4 rounded-xl text-white font-bold text-xl inline-block hover:scale-105 transition">
                         📥 Download
                     </a>
-                    <p id="downloadMessage" class="text-emerald-400 mt-4 text-sm"></p>
                 </div>
             </div>
         </div>
@@ -291,169 +287,46 @@
         <!-- Video Info Display -->
         <div id="displayArea" class="hidden bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-8 mb-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Thumbnail & Title -->
                 <div class="lg:col-span-1">
-                    <div class="w-full aspect-video bg-white/10 rounded-xl overflow-hidden border border-white/20">
+                    <div class="w-full aspect-video bg-white/10 rounded-xl overflow-hidden">
                         <img id="vidThumb" class="w-full h-full object-cover" src="" alt="Video thumbnail">
                     </div>
                     <h3 id="vidTitle" class="mt-4 text-xl font-bold text-white line-clamp-2"></h3>
-                    <div class="flex items-center gap-4 mt-2 text-slate-400">
+                    <div class="mt-2 text-slate-400">
                         <span>⏱️ <span id="vidDuration"></span></span>
                     </div>
                 </div>
-
-                <!-- Format Selection -->
                 <div class="lg:col-span-2">
-                    <!-- Video Formats -->
                     <div class="mb-6">
-                        <h4 class="text-blue-400 text-lg font-bold mb-4 flex items-center gap-2">
-                            <span>🎥 Available Video Qualities</span>
-                            <span class="text-xs bg-blue-500/30 px-3 py-1 rounded-full">Select to download</span>
-                        </h4>
+                        <h4 id="videoQualityText" class="text-blue-400 text-lg font-bold mb-4">🎥 Video Qualities</h4>
                         <div id="vList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2"></div>
                     </div>
-
-                    <!-- Audio Formats -->
                     <div>
-                        <h4 class="text-yellow-400 text-lg font-bold mb-4 flex items-center gap-2">
-                            <span>🎵 Available Audio Formats</span>
-                            <span class="text-xs bg-yellow-500/30 px-3 py-1 rounded-full">Convert to MP3</span>
-                        </h4>
+                        <h4 id="audioFormatText" class="text-yellow-400 text-lg font-bold mb-4">🎵 Audio Formats</h4>
                         <div id="aList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-2"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Downloaded Files List -->
+        <!-- Downloaded Files -->
         <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-white font-bold text-lg">📁 Downloaded Files</h3>
+                <h3 id="filesText" class="text-white font-bold text-lg">📁 Downloaded Files</h3>
                 <button onclick="loadDownloadedFiles()" class="px-4 py-2 bg-white/10 rounded-lg text-white hover:bg-white/20 transition text-sm">
                     🔄 Refresh
                 </button>
             </div>
             <div id="filesContainer" class="space-y-2 max-h-60 overflow-y-auto">
-                <p class="text-slate-400 text-center py-4">Click refresh to load files</p>
+                <p id="noFilesText" class="text-slate-400 text-center py-4">Click refresh to load files</p>
             </div>
-            <div id="downloadPath" class="mt-4 text-xs text-slate-500 border-t border-white/10 pt-4"></div>
         </div>
     </div>
 
     <script>
-        // ==================== INSPECT PROTECTION ====================
-        let inspectAllowed = false;
-        
-        // Encrypted credentials (base64 of "youtube:YOUtube")
-        const ENCRYPTED_CREDENTIALS = "eW91dHViZTpZT1V0dWJl";  // base64 of "youtube:YOUtube"
-        
-        // Disable right-click by default
-        document.addEventListener('contextmenu', (e) => {
-            if (!inspectAllowed) {
-                e.preventDefault();
-                showPasswordModal();
-                showToast('🔒 Right-click disabled - Please unlock inspect mode first', 'warning');
-            }
-        });
-        
-        // Disable keyboard shortcuts for developer tools
-        document.addEventListener('keydown', (e) => {
-            if (!inspectAllowed) {
-                // F12
-                if (e.key === 'F12') {
-                    e.preventDefault();
-                    showPasswordModal();
-                    showToast('🔒 Developer tools are locked', 'warning');
-                }
-                // Ctrl+Shift+I / Cmd+Opt+I
-                if ((e.ctrlKey && e.shiftKey && e.key === 'I') || (e.metaKey && e.altKey && e.key === 'I')) {
-                    e.preventDefault();
-                    showPasswordModal();
-                }
-                // Ctrl+Shift+J / Cmd+Opt+J
-                if ((e.ctrlKey && e.shiftKey && e.key === 'J') || (e.metaKey && e.altKey && e.key === 'J')) {
-                    e.preventDefault();
-                    showPasswordModal();
-                }
-                // Ctrl+U (view source)
-                if (e.ctrlKey && e.key === 'u') {
-                    e.preventDefault();
-                    showPasswordModal();
-                }
-            }
-        });
-        
-        // Show toast message
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = 'toast-message';
-            if (type === 'warning') {
-                toast.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-            }
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-        
-        // Show password modal
-        function showPasswordModal() {
-            document.getElementById('passwordModal').classList.add('active');
-            document.getElementById('modalUsername').value = '';
-            document.getElementById('modalPassword').value = '';
-            document.getElementById('modalError').classList.add('hidden');
-        }
-        
-        // Hide modal
-        function hidePasswordModal() {
-            document.getElementById('passwordModal').classList.remove('active');
-        }
-        
-        // Verify credentials
-        function verifyCredentials(username, password) {
-            const inputStr = `${username}:${password}`;
-            const inputEncrypted = btoa(inputStr);
-            return inputEncrypted === ENCRYPTED_CREDENTIALS;
-        }
-        
-        // Enable inspect
-        function enableInspect() {
-            inspectAllowed = true;
-            document.getElementById('inspectIndicator').className = 'w-4 h-4 rounded-full bg-green-500';
-            document.getElementById('inspectStatusText').textContent = '🔓 Right-click: Enabled';
-            hidePasswordModal();
-            showToast('✅ Inspect mode unlocked successfully!', 'success');
-        }
-        
-        // Event listeners for modal
-        document.getElementById('enableInspectBtn').addEventListener('click', showPasswordModal);
-        
-        document.getElementById('modalSubmit').addEventListener('click', () => {
-            const username = document.getElementById('modalUsername').value.trim();
-            const password = document.getElementById('modalPassword').value;
-            
-            if (verifyCredentials(username, password)) {
-                enableInspect();
-            } else {
-                document.getElementById('modalError').classList.remove('hidden');
-                document.getElementById('modalUsername').value = '';
-                document.getElementById('modalPassword').value = '';
-            }
-        });
-        
-        document.getElementById('modalCancel').addEventListener('click', hidePasswordModal);
-        
-        // Close modal if click outside
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('passwordModal');
-            if (e.target === modal) {
-                hidePasswordModal();
-            }
-        });
-
         // ==================== GLOBAL VARIABLES ====================
+        const ENCRYPTED_CREDENTIALS = "eW91dHViZTpZT1V0dWJl"; // base64 of "youtube:YOUtube"
+        let inspectEnabled = false;
         let selectedFormat = null;
         let selectedType = 'video';
         let currentVideoUrl = '';
@@ -461,7 +334,282 @@
         let apiBaseUrl = '';
         let currentFileId = null;
 
+        // ==================== LANGUAGE TRANSLATIONS ====================
+        const translations = {
+            ta: {
+                inspectDisabled: 'Inspect Mode முடக்கப்பட்டுள்ளது',
+                inspectEnabled: 'Inspect Mode இயக்கப்பட்டது',
+                clickToEnable: 'இயக்க கிளிக் செய்க',
+                clickToDisable: 'முடக்க கிளிக் செய்க',
+                enterCredentials: 'கடவுச்சொல்லை உள்ளிடவும்',
+                verify: 'சரிபார்த்து இயக்கவும்',
+                cancel: 'ரத்து செய்',
+                serverConnected: 'சர்வர் இணைக்கப்பட்டது',
+                serverDisconnected: 'சர்வர் துண்டிக்கப்பட்டது',
+                analyzing: 'தகவல் பெறப்படுகிறது...',
+                downloadStart: 'பதிவிறக்கம் தொடங்குகிறது...',
+                converting: 'MP3 ஆக மாற்றப்படுகிறது...',
+                complete: 'முடிந்தது!',
+                videoQualities: '🎥 வீடியோ தரங்கள்',
+                audioFormats: '🎵 ஆடியோ வடிவங்கள்',
+                downloadedFiles: '📁 பதிவிறக்கப்பட்ட கோப்புகள்',
+                noFiles: 'கோப்புகள் இல்லை',
+                invalidCredentials: 'தவறான பயனர்பெயர் அல்லது கடவுச்சொல்!'
+            },
+            en: {
+                inspectDisabled: 'Inspect Mode Disabled',
+                inspectEnabled: 'Inspect Mode Enabled',
+                clickToEnable: 'Click to enable',
+                clickToDisable: 'Click to disable',
+                enterCredentials: 'Enter Credentials',
+                verify: 'Verify & Enable',
+                cancel: 'Cancel',
+                serverConnected: 'Server Connected',
+                serverDisconnected: 'Server Disconnected',
+                analyzing: 'Fetching video information...',
+                downloadStart: 'Starting download...',
+                converting: 'Converting to MP3...',
+                complete: 'Complete!',
+                videoQualities: '🎥 Video Qualities',
+                audioFormats: '🎵 Audio Formats',
+                downloadedFiles: '📁 Downloaded Files',
+                noFiles: 'No files yet',
+                invalidCredentials: 'Invalid username or password!'
+            },
+            hi: {
+                inspectDisabled: 'इंस्पेक्ट मोड अक्षम',
+                inspectEnabled: 'इंस्पेक्ट मोड सक्षम',
+                clickToEnable: 'सक्षम करने के लिए क्लिक करें',
+                clickToDisable: 'अक्षम करने के लिए क्लिक करें',
+                enterCredentials: 'पासवर्ड दर्ज करें',
+                verify: 'सत्यापित करें और सक्षम करें',
+                cancel: 'रद्द करें',
+                serverConnected: 'सर्वर कनेक्टेड',
+                serverDisconnected: 'सर्वर डिस्कनेक्टेड',
+                analyzing: 'जानकारी प्राप्त हो रही है...',
+                downloadStart: 'डाउनलोड शुरू...',
+                converting: 'MP3 में बदला जा रहा है...',
+                complete: 'पूर्ण!',
+                videoQualities: '🎥 वीडियो गुणवत्ता',
+                audioFormats: '🎵 ऑडियो प्रारूप',
+                downloadedFiles: '📁 डाउनलोड की गई फाइलें',
+                noFiles: 'कोई फाइल नहीं',
+                invalidCredentials: 'गलत उपयोगकर्ता नाम या पासवर्ड!'
+            },
+            te: {
+                inspectDisabled: 'ఇన్స్పెక్ట్ మోడ్ నిలిపివేయబడింది',
+                inspectEnabled: 'ఇన్స్పెక్ట్ మోడ్ ప్రారంభించబడింది',
+                clickToEnable: 'ప్రారంభించడానికి క్లిక్ చేయండి',
+                clickToDisable: 'నిలిపివేయడానికి క్లిక్ చేయండి',
+                enterCredentials: 'పాస్‌వర్డ్ నమోదు చేయండి',
+                verify: 'ధృవీకరించి ప్రారంభించండి',
+                cancel: 'రద్దు చేయండి',
+                serverConnected: 'సర్వర్ కనెక్ట్ అయింది',
+                serverDisconnected: 'సర్వర్ డిస్కనెక్ట్ అయింది',
+                analyzing: 'సమాచారం పొందబడుతోంది...',
+                downloadStart: 'డౌన్‌లోడ్ ప్రారంభమవుతుంది...',
+                converting: 'MP3గా మార్చబడుతోంది...',
+                complete: 'పూర్తయింది!',
+                videoQualities: '🎥 వీడియో నాణ్యతలు',
+                audioFormats: '🎵 ఆడియో ఫార్మాట్లు',
+                downloadedFiles: '📁 డౌన్‌లోడ్ చేసిన ఫైళ్ళు',
+                noFiles: 'ఫైళ్ళు లేవు',
+                invalidCredentials: 'తప్పు యూజర్‌నేమ్ లేదా పాస్‌వర్డ్!'
+            },
+            ml: {
+                inspectDisabled: 'ഇൻസ്പെക്ട് മോഡ് പ്രവർത്തനരഹിതമാക്കി',
+                inspectEnabled: 'ഇൻസ്പെക്ട് മോഡ് പ്രവർത്തനക്ഷമമാക്കി',
+                clickToEnable: 'സജീവമാക്കാൻ ക്ലിക്ക് ചെയ്യുക',
+                clickToDisable: 'നിർജ്ജീവമാക്കാൻ ക്ലിക്ക് ചെയ്യുക',
+                enterCredentials: 'പാസ്‌വേഡ് നൽകുക',
+                verify: 'പരിശോധിച്ച് സജീവമാക്കുക',
+                cancel: 'റദ്ദാക്കുക',
+                serverConnected: 'സെർവർ കണക്റ്റ് ചെയ്തു',
+                serverDisconnected: 'സെർവർ വിച്ഛേദിച്ചു',
+                analyzing: 'വിവരങ്ങൾ ശേഖരിക്കുന്നു...',
+                downloadStart: 'ഡൗൺലോഡ് ആരംഭിക്കുന്നു...',
+                converting: 'MP3 ആയി മാറ്റുന്നു...',
+                complete: 'പൂർത്തിയായി!',
+                videoQualities: '🎥 വീഡിയോ നിലവാരങ്ങൾ',
+                audioFormats: '🎵 ഓഡിയോ ഫോർമാറ്റുകൾ',
+                downloadedFiles: '📁 ഡൗൺലോഡ് ചെയ്ത ഫയലുകൾ',
+                noFiles: 'ഫയലുകളൊന്നുമില്ല',
+                invalidCredentials: 'തെറ്റായ ഉപയോക്തൃനാമം അല്ലെങ്കിൽ പാസ്‌വേഡ്!'
+            },
+            kn: {
+                inspectDisabled: 'ಇನ್‌ಸ್ಪೆಕ್ಟ್ ಮೋಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ',
+                inspectEnabled: 'ಇನ್‌ಸ್ಪೆಕ್ಟ್ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ',
+                clickToEnable: 'ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ',
+                clickToDisable: 'ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ',
+                enterCredentials: 'ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ',
+                verify: 'ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಸಕ್ರಿಯಗೊಳಿಸಿ',
+                cancel: 'ರದ್ದುಮಾಡಿ',
+                serverConnected: 'ಸರ್ವರ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ',
+                serverDisconnected: 'ಸರ್ವರ್ ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ',
+                analyzing: 'ಮಾಹಿತಿ ಪಡೆಯಲಾಗುತ್ತಿದೆ...',
+                downloadStart: 'ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭವಾಗುತ್ತದೆ...',
+                converting: 'MP3 ಗೆ ಪರಿವರ್ತಿಸಲಾಗುತ್ತಿದೆ...',
+                complete: 'ಪೂರ್ಣಗೊಂಡಿದೆ!',
+                videoQualities: '🎥 ವೀಡಿಯೊ ಗುಣಮಟ್ಟಗಳು',
+                audioFormats: '🎵 ಆಡಿಯೊ ಫಾರ್ಮ್ಯಾಟ್‌ಗಳು',
+                downloadedFiles: '📁 ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳು',
+                noFiles: 'ಯಾವುದೇ ಫೈಲ್‌ಗಳಿಲ್ಲ',
+                invalidCredentials: 'ತಪ್ಪಾದ ಬಳಕೆದಾರಹೆಸರು ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್!'
+            }
+        };
+
+        let currentLang = 'ta';
+
+        // ==================== LANGUAGE FUNCTIONS ====================
+        function updateLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            // Update inspect text
+            document.getElementById('inspectText').textContent = inspectEnabled ? t.inspectEnabled : t.inspectDisabled;
+            document.getElementById('inspectStatus').textContent = inspectEnabled ? t.clickToDisable : t.clickToEnable;
+            document.getElementById('inspectIcon').textContent = inspectEnabled ? '🔓' : '🔒';
+            
+            // Update modal
+            document.getElementById('modalTitle').textContent = '🔐 ' + t.enterCredentials;
+            document.getElementById('modalSubmit').textContent = '🔓 ' + t.verify;
+            document.getElementById('modalCancel').textContent = t.cancel;
+            
+            // Update other UI elements
+            document.getElementById('loadingText').textContent = t.analyzing;
+            document.getElementById('videoQualityText').textContent = t.videoQualities;
+            document.getElementById('audioFormatText').textContent = t.audioFormats;
+            document.getElementById('filesText').textContent = t.downloadedFiles;
+            document.getElementById('noFilesText').textContent = t.noFiles;
+            
+            // Update server status if connected
+            const serverStatus = document.getElementById('serverStatusText').textContent;
+            if (serverStatus.includes('Connected')) {
+                document.getElementById('serverStatusText').textContent = '✅ ' + t.serverConnected;
+            } else if (serverStatus.includes('Disconnected')) {
+                document.getElementById('serverStatusText').textContent = '❌ ' + t.serverDisconnected;
+            }
+        }
+
+        // Language selector event
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            updateLanguage(e.target.value);
+        });
+
+        // ==================== INSPECT TOGGLE FUNCTIONS ====================
+        function toggleInspect() {
+            const toggle = document.getElementById('inspectToggle');
+            
+            if (!inspectEnabled) {
+                // Show password modal to enable
+                showPasswordModal();
+            } else {
+                // Directly disable without password
+                setInspectState(false);
+                showToast(translations[currentLang].inspectDisabled, 'info');
+            }
+        }
+
+        function setInspectState(enabled) {
+            inspectEnabled = enabled;
+            const toggle = document.getElementById('inspectToggle');
+            const t = translations[currentLang];
+            
+            if (enabled) {
+                toggle.classList.remove('disabled');
+                toggle.classList.add('enabled');
+                document.getElementById('inspectIcon').textContent = '🔓';
+                document.getElementById('inspectText').textContent = t.inspectEnabled;
+                document.getElementById('inspectStatus').textContent = t.clickToDisable;
+                
+                // Enable right-click
+                document.removeEventListener('contextmenu', disableRightClick);
+            } else {
+                toggle.classList.add('disabled');
+                toggle.classList.remove('enabled');
+                document.getElementById('inspectIcon').textContent = '🔒';
+                document.getElementById('inspectText').textContent = t.inspectDisabled;
+                document.getElementById('inspectStatus').textContent = t.clickToEnable;
+                
+                // Disable right-click
+                document.addEventListener('contextmenu', disableRightClick);
+            }
+        }
+
+        // Disable right click function
+        function disableRightClick(e) {
+            e.preventDefault();
+            showToast(translations[currentLang].inspectDisabled, 'warning');
+        }
+
+        // Add right-click disable by default
+        document.addEventListener('contextmenu', disableRightClick);
+
+        // ==================== PASSWORD MODAL FUNCTIONS ====================
+        function showPasswordModal() {
+            document.getElementById('passwordModal').classList.add('active');
+            document.getElementById('modalUsername').value = '';
+            document.getElementById('modalPassword').value = '';
+            document.getElementById('modalError').classList.add('hidden');
+        }
+
+        function hidePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+        }
+
+        function verifyCredentials(username, password) {
+            const inputStr = `${username}:${password}`;
+            const inputEncrypted = btoa(inputStr);
+            return inputEncrypted === ENCRYPTED_CREDENTIALS;
+        }
+
+        // Modal event listeners
+        document.getElementById('modalSubmit').addEventListener('click', () => {
+            const username = document.getElementById('modalUsername').value.trim();
+            const password = document.getElementById('modalPassword').value;
+            
+            if (verifyCredentials(username, password)) {
+                setInspectState(true);
+                hidePasswordModal();
+                showToast('✅ Inspect mode enabled successfully!');
+            } else {
+                document.getElementById('modalError').classList.remove('hidden');
+                document.getElementById('modalPassword').value = '';
+                showToast(translations[currentLang].invalidCredentials, 'error');
+            }
+        });
+
+        document.getElementById('modalCancel').addEventListener('click', hidePasswordModal);
+
+        // Enter key in password field
+        document.getElementById('modalPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('modalSubmit').click();
+            }
+        });
+
+        // Close modal on outside click
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('passwordModal');
+            if (e.target === modal) {
+                hidePasswordModal();
+            }
+        });
+
         // ==================== UTILITY FUNCTIONS ====================
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast-message';
+            if (type === 'error') {
+                toast.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            } else if (type === 'warning') {
+                toast.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+            }
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
         function formatDuration(seconds) {
             if (!seconds) return '0:00';
             const hours = Math.floor(seconds / 3600);
@@ -485,16 +633,7 @@
             alert('❌ ' + message);
         }
 
-        function getQualityClass(resolution) {
-            const res = parseInt(resolution);
-            if (res >= 2160) return 'quality-4k';
-            if (res >= 1080) return 'quality-1080p';
-            if (res >= 720) return 'quality-720p';
-            if (res >= 480) return 'quality-480p';
-            return 'quality-360p';
-        }
-
-        // ==================== SERVER CONNECTION ====================
+        // ==================== SERVER FUNCTIONS ====================
         async function checkServerStatus() {
             const apiInput = document.getElementById('apiBaseUrl').value.trim();
             if (!apiInput) {
@@ -503,6 +642,7 @@
             }
 
             apiBaseUrl = apiInput.replace(/\/$/, '');
+            const t = translations[currentLang];
             
             try {
                 const response = await fetch(`${apiBaseUrl}/`, {
@@ -513,26 +653,27 @@
                 if (response.ok) {
                     const data = await response.json();
                     document.getElementById('serverStatusIndicator').className = 'w-4 h-4 rounded-full bg-green-500';
-                    document.getElementById('serverStatusText').textContent = '✅ Server: Connected';
-                    document.getElementById('serverPath').textContent = data.save_path || 'Downloads Ready';
+                    document.getElementById('serverStatusText').textContent = '✅ ' + t.serverConnected;
+                    document.getElementById('serverPath').textContent = data.save_path || 'Ready';
                     
                     const testResult = document.getElementById('connectionTestResult');
                     testResult.className = 'mt-3 text-sm text-emerald-400';
-                    testResult.textContent = '✅ Connection successful! Server is ready.';
+                    testResult.textContent = '✅ Connection successful!';
                     testResult.classList.remove('hidden');
                     
                     loadDownloadedFiles();
+                    showToast('✅ Server connected successfully');
                 } else {
                     throw new Error('Server response not OK');
                 }
             } catch (error) {
                 document.getElementById('serverStatusIndicator').className = 'w-4 h-4 rounded-full bg-red-500 animate-pulse';
-                document.getElementById('serverStatusText').textContent = '❌ Server: Disconnected';
+                document.getElementById('serverStatusText').textContent = '❌ ' + t.serverDisconnected;
                 document.getElementById('serverPath').textContent = '';
                 
                 const testResult = document.getElementById('connectionTestResult');
                 testResult.className = 'mt-3 text-sm text-red-400';
-                testResult.textContent = '❌ Connection failed! Check your URL and make sure server is running.';
+                testResult.textContent = '❌ Connection failed! Check your URL.';
                 testResult.classList.remove('hidden');
             }
         }
@@ -541,9 +682,9 @@
             await checkServerStatus();
         }
 
-        // ==================== FETCH VIDEO INFO ====================
+        // ==================== VIDEO FUNCTIONS ====================
         async function fetchMetadata() {
-            if (!inspectAllowed) {
+            if (!inspectEnabled) {
                 showPasswordModal();
                 return;
             }
@@ -556,49 +697,34 @@
                 return;
             }
 
-            if (!url.includes('youtube.com') && !url.includes('youtu.be') && !url.includes('youtube.com/shorts')) {
-                showError('Please enter a valid YouTube URL');
-                return;
-            }
-
             apiBaseUrl = apiInput.replace(/\/$/, '');
             currentVideoUrl = url;
 
             document.getElementById('loadingIndicator').classList.remove('hidden');
             document.getElementById('displayArea').classList.add('hidden');
-            document.getElementById('progressArea').classList.add('hidden');
 
             try {
                 const response = await fetch(`${apiBaseUrl}/get_info`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error);
-                }
+                if (data.error) throw new Error(data.error);
 
-                document.getElementById('vidTitle').textContent = data.title || 'Unknown Title';
-                document.getElementById('vidThumb').src = data.thumbnail || 'https://via.placeholder.com/320x180?text=No+Thumbnail';
+                document.getElementById('vidTitle').textContent = data.title || 'Unknown';
+                document.getElementById('vidThumb').src = data.thumbnail || 'https://via.placeholder.com/320x180';
                 document.getElementById('vidDuration').textContent = formatDuration(data.duration);
 
                 renderVideoFormats(data.video || []);
                 renderAudioFormats(data.audio || []);
-
                 document.getElementById('displayArea').classList.remove('hidden');
-                showToast('✅ Video info loaded successfully!');
+                showToast('✅ Video info loaded');
                 
             } catch (error) {
-                showError('Failed to fetch video info: ' + error.message);
+                showError('Failed: ' + error.message);
             } finally {
                 document.getElementById('loadingIndicator').classList.add('hidden');
             }
@@ -607,28 +733,16 @@
         function renderVideoFormats(formats) {
             const container = document.getElementById('vList');
             container.innerHTML = '';
-
-            if (!formats || formats.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 col-span-2 text-center py-4">No video formats available</p>';
-                return;
-            }
-
             formats.forEach(format => {
-                const qualityClass = getQualityClass(format.res.replace('p',''));
                 const btn = document.createElement('button');
-                btn.className = 'format-card w-full p-4 bg-white/5 rounded-xl text-left hover:bg-white/10 transition';
+                btn.className = 'format-card w-full p-4 bg-white/5 rounded-xl text-left hover:bg-white/10';
                 btn.innerHTML = `
                     <div class="flex justify-between items-center">
                         <div>
-                            <div class="font-bold text-white flex items-center gap-2">
-                                ${format.res}
-                                <span class="${qualityClass} quality-badge">${format.res}</span>
-                            </div>
-                            <div class="text-xs text-slate-400">${format.ext || 'mp4'}</div>
+                            <div class="font-bold text-white">${format.res}</div>
+                            <div class="text-xs text-slate-400">${format.ext}</div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-sm text-blue-400">${format.filesize ? formatBytes(format.filesize) : '--'}</div>
-                        </div>
+                        <div class="text-sm text-blue-400">${format.filesize ? formatBytes(format.filesize) : '--'}</div>
                     </div>
                 `;
                 btn.onclick = () => selectFormat(format.id, 'video', btn);
@@ -639,24 +753,16 @@
         function renderAudioFormats(formats) {
             const container = document.getElementById('aList');
             container.innerHTML = '';
-
-            if (!formats || formats.length === 0) {
-                container.innerHTML = '<p class="text-slate-400 col-span-2 text-center py-4">No audio formats available</p>';
-                return;
-            }
-
             formats.forEach(format => {
                 const btn = document.createElement('button');
-                btn.className = 'format-card w-full p-4 bg-white/5 rounded-xl text-left hover:bg-white/10 transition';
+                btn.className = 'format-card w-full p-4 bg-white/5 rounded-xl text-left hover:bg-white/10';
                 btn.innerHTML = `
                     <div class="flex justify-between items-center">
                         <div>
                             <div class="font-bold text-white">${format.abr || '128kbps'}</div>
-                            <div class="text-xs text-slate-400">Convert to MP3</div>
+                            <div class="text-xs text-slate-400">MP3</div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-sm text-yellow-400">${format.filesize ? formatBytes(format.filesize) : '--'}</div>
-                        </div>
+                        <div class="text-sm text-yellow-400">${format.filesize ? formatBytes(format.filesize) : '--'}</div>
                     </div>
                 `;
                 btn.onclick = () => selectFormat(format.id, 'audio', btn);
@@ -665,47 +771,33 @@
         }
 
         function selectFormat(formatId, type, element) {
-            document.querySelectorAll('.format-card').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            
+            document.querySelectorAll('.format-card').forEach(btn => btn.classList.remove('selected'));
             element.classList.add('selected');
             selectedFormat = formatId;
             selectedType = type;
-            
             startDownload();
         }
 
-        // ==================== DOWNLOAD FUNCTION ====================
+        // ==================== DOWNLOAD FUNCTIONS ====================
         async function startDownload() {
-            if (!inspectAllowed) {
+            if (!inspectEnabled) {
                 showPasswordModal();
                 return;
             }
             
             if (!selectedFormat) {
-                showError('Please select a format first');
+                showError('Please select a format');
                 return;
             }
 
             document.getElementById('progressArea').classList.remove('hidden');
             document.getElementById('downloadReady').classList.add('hidden');
-            
-            if (selectedType === 'video') {
-                document.getElementById('statusLabel').textContent = '🚀 Downloading video...';
-            } else {
-                document.getElementById('statusLabel').textContent = '🎵 Converting to MP3...';
-            }
-            
-            document.getElementById('pBar').style.width = '0%';
-            document.getElementById('pPercent').textContent = '0%';
+            document.getElementById('statusLabel').textContent = selectedType === 'video' ? 'Downloading video...' : 'Converting to MP3...';
 
             try {
                 const response = await fetch(`${apiBaseUrl}/download`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         url: currentVideoUrl,
                         format_id: selectedFormat,
@@ -715,41 +807,31 @@
                 });
 
                 const data = await response.json();
-
-                if (data.error) {
-                    throw new Error(data.error);
-                }
+                if (data.error) throw new Error(data.error);
 
                 if (data.status === 'started') {
                     currentFileId = data.file_id;
                     startProgressTracking();
                     checkDownloadStatus(data.file_id);
                 }
-
             } catch (error) {
-                stopProgressTracking();
                 showError('Download failed: ' + error.message);
-                document.getElementById('progressArea').classList.add('hidden');
             }
         }
 
         function startProgressTracking() {
             if (progressTimer) clearInterval(progressTimer);
-            
             progressTimer = setInterval(async () => {
                 try {
                     const response = await fetch(`${apiBaseUrl}/get_progress?file_id=${currentFileId}`);
                     const data = await response.json();
-
                     const percent = data.percent || '0';
                     document.getElementById('pBar').style.width = percent + '%';
                     document.getElementById('pPercent').textContent = percent + '%';
-                    
                     document.getElementById('downloadSpeed').textContent = `Speed: ${data.speed || '--'}`;
                     document.getElementById('downloadEta').textContent = `Time left: ${data.eta || '--'}`;
-
                 } catch (error) {
-                    console.log('Progress tracking error:', error);
+                    console.log('Progress error:', error);
                 }
             }, 1000);
         }
@@ -763,84 +845,55 @@
 
         async function checkDownloadStatus(fileId) {
             let attempts = 0;
-            const maxAttempts = 60; // 2 minutes max
-            
-            while (attempts < maxAttempts) {
+            while (attempts < 60) {
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                
                 try {
                     const response = await fetch(`${apiBaseUrl}/get_progress?file_id=${fileId}`);
                     const data = await response.json();
                     
                     if (data.status === 'completed') {
                         stopProgressTracking();
-                        
                         document.getElementById('statusLabel').textContent = '✅ Complete!';
                         document.getElementById('pBar').style.width = '100%';
                         document.getElementById('pPercent').textContent = '100%';
                         document.getElementById('downloadReady').classList.remove('hidden');
                         
                         const link = document.getElementById('finalLink');
-                        const message = document.getElementById('downloadMessage');
-                        
                         link.href = `${apiBaseUrl}/stream/${data.file_id}`;
-                        link.download = data.filename || 'video.mp4';
                         link.textContent = selectedType === 'video' ? '📥 Download Video' : '🎵 Download MP3';
-                        message.textContent = '✅ File ready for download!';
                         
-                        // Auto-click for local download
-                        setTimeout(() => {
-                            link.click();
-                        }, 1000);
-                        
+                        setTimeout(() => link.click(), 1000);
                         loadDownloadedFiles();
-                        showToast('✅ Download completed successfully!');
+                        showToast('✅ Download completed');
                         break;
-                        
-                    } else if (data.status === 'error') {
-                        throw new Error(data.error || 'Download failed');
                     }
                 } catch (error) {
-                    console.log('Status check error:', error);
-                    if (attempts > 30) {
-                        showError('Download timeout. Please try again.');
-                        break;
-                    }
+                    console.log('Status error:', error);
                 }
                 attempts++;
             }
         }
 
-        // ==================== LOAD DOWNLOADED FILES ====================
+        // ==================== FILE FUNCTIONS ====================
         async function loadDownloadedFiles() {
             if (!apiBaseUrl) return;
-
             try {
                 const response = await fetch(`${apiBaseUrl}/list_files`);
                 const data = await response.json();
-
                 const container = document.getElementById('filesContainer');
-                const pathDiv = document.getElementById('downloadPath');
-
+                
                 if (data.files && data.files.length > 0) {
                     container.innerHTML = '';
-                    
                     data.files.slice(-10).reverse().forEach(file => {
-                        const fileDiv = document.createElement('div');
-                        fileDiv.className = 'flex justify-between items-center p-3 bg-white/5 rounded-lg';
-                        fileDiv.innerHTML = `
-                            <span class="text-white text-sm truncate max-w-[200px]">
-                                ${file.type === 'video' ? '🎬' : '🎵'} ${file.name}
-                            </span>
-                            <span class="text-slate-400 text-xs">${formatBytes(file.size)}</span>
+                        container.innerHTML += `
+                            <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                                <span class="text-white text-sm truncate max-w-[200px]">${file.type === 'video' ? '🎬' : '🎵'} ${file.name}</span>
+                                <span class="text-slate-400 text-xs">${formatBytes(file.size)}</span>
+                            </div>
                         `;
-                        container.appendChild(fileDiv);
                     });
-
-                    pathDiv.textContent = `📁 Downloads: ${data.path || '/tmp/downloads'}`;
                 } else {
-                    container.innerHTML = '<p class="text-slate-400 text-center py-4">No files downloaded yet</p>';
-                    pathDiv.textContent = '';
+                    container.innerHTML = '<p class="text-slate-400 text-center py-4">' + translations[currentLang].noFiles + '</p>';
                 }
             } catch (error) {
                 console.log('Load files error:', error);
@@ -852,17 +905,13 @@
             const savedUrl = localStorage.getItem('apiBaseUrl');
             if (savedUrl) {
                 document.getElementById('apiBaseUrl').value = savedUrl;
-                checkServerStatus();
             }
-
             document.getElementById('apiBaseUrl').addEventListener('change', function() {
                 localStorage.setItem('apiBaseUrl', this.value);
             });
             
-            // Auto-refresh files every 30 seconds
-            setInterval(() => {
-                if (apiBaseUrl) loadDownloadedFiles();
-            }, 30000);
+            // Set initial language
+            updateLanguage('ta');
         };
     </script>
 </body>
